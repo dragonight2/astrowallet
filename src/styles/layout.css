@@ -195,3 +195,8 @@
 .hide-values #app .mv-v { display: none; }
 .hide-values #app .mv-h { display: inline; color: var(--text); letter-spacing: .04em; white-space: nowrap; }
 .hide-values #app .hero-v.neg .mv-h { color: var(--danger); }
+
+/* Sino de lançamentos detectados (captura automática) */
+.bell { position: relative; }
+.bell.has { background: var(--accent); color: var(--on-accent); }
+.badge-count { position: absolute; top: -5px; right: -6px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--danger); color: #FFFFFF; font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px var(--bg); }

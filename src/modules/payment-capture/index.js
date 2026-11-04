@@ -83,7 +83,7 @@ async function pull(ctx, { force = false } = {}) {
     // quando; no resto do tempo, um aviso discreto e o cartão no Início.
     const lastShown = dataOf(store).reviewShownAt || 0;
     if (!isSheetOpen() && Date.now() - lastShown > AUTO_REVIEW_EVERY_MS) showReview(ctx);
-    else ui.toast(`${fresh === 1 ? "1 novo item" : `${fresh} novos itens`} na fila · ${merged.length} para revisar`);
+    else ui.toast(detectedText(fresh, true));
   } catch (err) {
     console.warn("Captura de pagamentos falhou", err);
   } finally {
@@ -153,7 +153,7 @@ function reviewHtml(store) {
     days[days.length - 1].items.push(p);
   }
   return `<div class="pop alert-pop review">
-      <h2>${pending.length === 1 ? "1 item para revisar" : `${pending.length} itens para revisar`}</h2>
+      <h2>${pending.length === 1 ? "1 lançamento para revisar" : `${pending.length} lançamentos para revisar`}</h2>
       <p class="muted">Pagamentos e recebimentos das notificações do seu banco e da sua carteira.</p>
       <div class="pop-stats two">
         <div><span>Saídas</span><b class="num">${money(out)}</b></div>
@@ -196,6 +196,23 @@ function quickSave(ctx, item) {
   store.setModuleData(MODULE_ID, { pending: pendingOf(store).filter((p) => p.id !== item.id), learned });
   chosenArea.delete(item.id);
   return true;
+}
+
+/**
+ * "1 novo lançamento detectado" / "3 novos lançamentos detectados" (aviso de chegada)
+ * "1 lançamento detectado" / "6 lançamentos detectados" (total acumulado)
+ */
+const detectedText = (n, fresh = false) =>
+  n === 1
+    ? `1 ${fresh ? "novo " : ""}lançamento detectado`
+    : `${n} ${fresh ? "novos " : ""}lançamentos detectados`;
+
+/** Sino na barra superior: acumula os lançamentos detectados; tocar abre a fila. */
+function bellButton(count) {
+  const label = count ? `${detectedText(count)}. Toque para revisar` : "Nenhum lançamento detectado";
+  return `<button class="eye bell ${count ? "has" : ""}" data-action="capture:bell" aria-label="${label}" title="${label}">${icon("bell")}${
+    count ? `<span class="badge-count num">${count > 99 ? "99+" : count}</span>` : ""
+  }</button>`;
 }
 
 /** "3 pagamentos e 1 recebimento" */
@@ -268,6 +285,10 @@ function explainSheet(ctx) {
 export default {
   id: MODULE_ID,
   settings: { title: "Captura automática", order: 27, render: settingsHtml },
+  navActions(ctx) {
+    if (!ctx.services.platform?.paymentCapture?.available || !dataOf(ctx.store).enabled) return [];
+    return [{ order: 5, html: bellButton(pendingOf(ctx.store).length) }];
+  },
   summaryCards(ctx) {
     const count = pendingOf(ctx.store).length;
     if (!count || !dataOf(ctx.store).enabled) return [];
@@ -276,7 +297,7 @@ export default {
         order: 5,
         html: `<div class="card cta">
         <div class="cta-ic">${icon("card")}</div>
-        <div class="cta-m"><b>${count === 1 ? "1 item na fila" : `${count} itens na fila`}</b><p>${queueSummary(ctx.store)}. Revise quando quiser para lançar.</p></div>
+        <div class="cta-m"><b>${detectedText(count)}</b><p>${queueSummary(ctx.store)}. Revise quando quiser para lançar.</p></div>
         <button class="btn sm" data-action="capture:open-list">Revisar</button>
       </div>`,
       },
@@ -337,6 +358,10 @@ export default {
           <div class="card list">${PAYMENT_APPS.map((a) => `<div class="setrow"><span class="ci sm">${icon(a.wallet ? "card" : "piggy")}</span><span class="setrow-m"><b>${escapeHtml(a.name)}</b></span></div>`).join("")}</div></div>`,
         ),
       "capture:open-list": () => showReview(ctx),
+      "capture:bell": () => {
+        if (pendingOf(store).length) showReview(ctx);
+        else ui.toast("Nenhum lançamento detectado por enquanto");
+      },
       "capture:dismiss": (button) => {
         removePending(store, button.dataset.id);
         showReview(ctx, { keepScroll: true });
@@ -355,7 +380,7 @@ export default {
         let count = 0;
         for (const item of [...pendingOf(store)]) if (quickSave(ctx, item)) count += 1;
         showReview(ctx);
-        ui.toast(count === 1 ? "1 item lançado" : `${count} itens lançados`);
+        ui.toast(count === 1 ? "1 lançamento salvo" : `${count} lançamentos salvos`);
       },
       "capture:review": (button) => {
         const item = pendingOf(store).find((p) => p.id === button.dataset.id);
