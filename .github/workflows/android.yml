@@ -66,6 +66,18 @@ jobs:
           java-version: 21
           cache: gradle
 
+      - name: Conferir a senha e a chave (sem mostrar a senha)
+        if: env.AW_SIGNED == 'true'
+        run: |
+          GOT=$(printf %s "$ANDROID_KEYSTORE_PASSWORD" | sha256sum | cut -c1-12)
+          echo "tamanho da senha cadastrada: ${#ANDROID_KEYSTORE_PASSWORD} (esperado 32)"
+          if [ "$GOT" != "49037a0a93bd" ]; then
+            echo "::error::A senha cadastrada no segredo ANDROID_KEYSTORE_PASSWORD não é a da chave. Confira se não ficou espaço ou quebra de linha ao colar."
+            exit 1
+          fi
+          echo "senha confere"
+          keytool -list -keystore android/keystore/astrowallet-release.p12 -storetype pkcs12 -storepass "$ANDROID_KEYSTORE_PASSWORD" | head -8
+
       - name: Compilar o APK assinado
         working-directory: android
         run: |
