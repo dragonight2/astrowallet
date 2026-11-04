@@ -81,6 +81,14 @@ const noNotifications = {
   onOpen() {},
 };
 
+/**
+ * O navegador não consegue ler notificações de outros apps; a captura
+ * automática de pagamentos só existe no app Android.
+ * (Os testes automáticos podem simular o celular definindo
+ * window.__astroPaymentCaptureMock antes de o app abrir.)
+ */
+const noPaymentCapture = { available: false };
+
 export async function createWebPlatform() {
   return {
     kind: "web",
@@ -89,6 +97,7 @@ export async function createWebPlatform() {
     share: webShare,
     files: webFiles,
     notifications: noNotifications,
+    paymentCapture: globalThis.__astroPaymentCaptureMock || noPaymentCapture,
     onBackground(callback) {
       document.addEventListener("visibilitychange", () => {
         if (document.hidden) callback();

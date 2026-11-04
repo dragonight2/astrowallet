@@ -1,7 +1,8 @@
 # Astro Wallet
 
 Carteira pessoal para o celular: receitas, despesas, contas fixas, compras parceladas,
-limites por área com alertas e relatório mensal em PDF (com aviso quando o mês fecha). **Todos os dados ficam só no aparelho**,
+limites por área com alertas, relatório mensal em PDF com gráficos e, no Android, captura
+automática de pagamentos pelas notificações do banco/carteira (opcional, revisada pela pessoa). **Todos os dados ficam só no aparelho**,
 sem servidor, sem conta e sem login.
 
 - Prévia no navegador: https://dragonight2.github.io/astrowallet/
@@ -44,6 +45,7 @@ src/
   ui/                  peças visuais reaproveitadas (ícones, marca, folhas, máscaras)
   modules/             cada funcionalidade num arquivo
   styles/              CSS (tokens de design, base, layout, componentes, telas)
+native/android/        código Kotlin (captura de pagamentos) para o projeto Android
 tests/                 testes automáticos (node --test)
 ```
 

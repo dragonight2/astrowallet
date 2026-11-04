@@ -11,6 +11,7 @@ import hideValues from "./hide-values.js";
 import limits from "./limits.js";
 import lock from "./lock.js";
 import onboarding from "./onboarding.js";
+import paymentCapture from "./payment-capture/index.js";
 import reports from "./reports/index.js";
 import settings from "./settings.js";
 import summary from "./summary.js";
@@ -30,5 +31,6 @@ export const MODULES = [
   appearance,
   hideValues,
   alerts,
+  paymentCapture,
   backup,
 ];

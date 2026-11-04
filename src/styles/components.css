@@ -227,3 +227,22 @@ body:has(#app.has-primary) .toast { bottom: calc(136px + env(safe-area-inset-bot
 .pop-row b { display: block; font-weight: 600; }
 .pop-row p { margin: 2px 0 0; font-size: 13px; color: var(--muted); }
 .pop-row p.bad { color: var(--danger); }
+
+/* Captura automática de pagamentos — módulo payment-capture */
+.steps { margin: 4px 0 0; padding-left: 22px; display: grid; gap: 8px; font-size: 14px; line-height: 1.45; text-align: left; }
+.steps-card { text-align: left; }
+.steps-card .hint { margin: 10px 0 0; }
+.capture-status { display: flex; align-items: center; gap: 8px; margin: 10px 0 8px; padding: 10px 12px; border-radius: 12px; background: var(--fill); font-size: 14px; font-weight: 600; }
+.capture-status svg { font-size: 18px; flex: none; }
+.capture-status.ok svg { color: var(--accent); }
+.capture-status.warn svg { color: var(--warn); }
+.card > .btn + .btn { margin-top: 8px; }
+.card > .capture-status ~ .btn { margin-top: 8px; }
+.pop-row .grow { flex: 1; min-width: 0; text-align: left; }
+.pop-row .grow b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pop-row > b.num { font-weight: 700; white-space: nowrap; }
+.pop-actions { padding-bottom: 10px; }
+.pop-actions .btn.sm { width: 100%; }
+.pop-list .pop-actions + .pop-row { border-top: .5px solid var(--sep); }
+.inline-link { background: none; border: 0; padding: 0; font: inherit; color: var(--text); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.pop-row .ci.in { background: var(--accent); color: var(--on-accent); }

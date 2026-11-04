@@ -146,8 +146,10 @@ function formHtml(ctx) {
  * Abre o formulário.
  * @param kind  "expense" | "income" | "installment" | "rec-income" | "rec-expense"
  * @param item  item do mês para editar (ou null para novo)
+ * @param prefill  valores sugeridos para um lançamento novo
+ *                 { amount, description, date, category_id, title } (ex.: pagamento detectado)
  */
-function openEntryForm(ctx, kind, item = null) {
+function openEntryForm(ctx, kind, item = null, prefill = null) {
   const { store } = ctx;
   const isInstallment = kind === "installment" || !!item?.installment;
   const src = item
@@ -156,7 +158,7 @@ function openEntryForm(ctx, kind, item = null) {
       : item.recurring
         ? store.state.recurring.find((r) => r.id === item.id)
         : store.state.entries.find((e) => e.id === item.id)
-    : null;
+    : prefill;
   form = {
     kind: isInstallment ? "expense" : kind,
     item,
@@ -166,7 +168,11 @@ function openEntryForm(ctx, kind, item = null) {
     valueMode: "total",
     count: src?.count || (isInstallment ? 2 : null),
   };
-  const title = item ? (isInstallment ? "Editar compra parcelada" : "Editar lançamento") : "Novo lançamento";
+  const title = item
+    ? isInstallment
+      ? "Editar compra parcelada"
+      : "Editar lançamento"
+    : prefill?.title || "Novo lançamento";
   ctx.ui.openSheet(title, formHtml(ctx));
 }
 
@@ -269,7 +275,7 @@ export default {
   init(ctx) {
     const { store, app, ui } = ctx;
     // Outros módulos podem abrir o formulário por aqui.
-    ctx.ui.openEntryForm = (kind, item) => openEntryForm(ctx, kind, item);
+    ctx.ui.openEntryForm = (kind, item, prefill) => openEntryForm(ctx, kind, item, prefill);
 
     registerActions({
       "entry:new": (el) => openEntryForm(ctx, el?.dataset?.kind || "expense"),
@@ -324,6 +330,8 @@ export default {
 
       "entry:save": () => {
         const { kind, item } = form;
+        // Lançamento vindo de uma sugestão (ex.: pagamento detectado): avisa quem sugeriu.
+        const onSaved = item ? null : form.src?.onSaved;
         const amount = parseMoney($("#f-amount").value);
         if (!(amount > 0)) return setText("f-err", "Digite um valor maior que zero.");
         if (isExpenseKind(kind) && !form.cat) return setText("f-err", "Escolha a área dessa despesa.");
@@ -348,7 +356,7 @@ export default {
           ui.closeSheet();
           if (!item && f.start !== app.month) app.setMonth(f.start);
           if (item) store.updateInstallment(item.id, fields);
-          else store.addInstallment(fields);
+          else onSaved?.(store.addInstallment(fields));
           return ui.toast(`Compra em ${f.count}x salva`);
         }
 
@@ -356,14 +364,14 @@ export default {
           const day = clampDay($("#f-day").value);
           ui.closeSheet();
           if (item) store.editRecurring(item.id, { description, amount, day, category_id }, app.month);
-          else store.addRecurring({ type, description, amount, day, category_id, start_month: app.month });
+          else onSaved?.(store.addRecurring({ type, description, amount, day, category_id, start_month: app.month }));
         } else {
           const date = $("#f-date").value;
           if (!DATE_RE.test(date)) return setText("f-err", "Escolha uma data válida.");
           ui.closeSheet();
           if (date.slice(0, 7) !== app.month) app.setMonth(date.slice(0, 7));
           if (item) store.updateEntry(item.id, { type, description, amount, category_id, date });
-          else store.addEntry({ type, description, amount, category_id, date });
+          else onSaved?.(store.addEntry({ type, description, amount, category_id, date }));
         }
         ui.toast("Salvo");
       },

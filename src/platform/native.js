@@ -8,6 +8,7 @@
 import { BiometricAuth } from "@aparajita/capacitor-biometric-auth";
 import { KeychainAccess, SecureStorage } from "@aparajita/capacitor-secure-storage";
 import { App } from "@capacitor/app";
+import { Capacitor, registerPlugin } from "@capacitor/core";
 import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
 import { LocalNotifications } from "@capacitor/local-notifications";
 import { Share } from "@capacitor/share";
@@ -142,6 +143,43 @@ const nativeFiles = {
   },
 };
 
+// Captura de pagamentos pelas notificações (código nativo em android/…/paymentcapture).
+// O serviço do Android só guarda notificações dos apps de banco/carteira da lista
+// e só enquanto a pessoa deixar a opção ligada. Aqui o app busca essa fila,
+// e cada aviso é apagado do lado nativo assim que chega ao app.
+const PaymentCapturePlugin = registerPlugin("PaymentCapture");
+
+const nativePaymentCapture = {
+  available: Capacitor.getPlatform() === "android",
+  async isGranted() {
+    try {
+      return (await PaymentCapturePlugin.isGranted()).granted === true;
+    } catch {
+      return false;
+    }
+  },
+  async openSettings() {
+    await PaymentCapturePlugin.openSettings();
+  },
+  /** Tela "Informações do app" (onde fica "Permitir configurações restritas"). */
+  async openAppInfo() {
+    await PaymentCapturePlugin.openAppInfo();
+  },
+  async setEnabled(enabled, packages) {
+    await PaymentCapturePlugin.setEnabled({ enabled, packages });
+  },
+  async fetchPending() {
+    try {
+      return (await PaymentCapturePlugin.getPending()).items || [];
+    } catch {
+      return [];
+    }
+  },
+  async ack(ids) {
+    if (ids.length) await PaymentCapturePlugin.ack({ ids });
+  },
+};
+
 // Notificações locais: agendadas e mostradas pelo próprio celular, sem internet.
 // Usamos ids fixos para poder trocar o agendamento sem duplicar avisos.
 const MONTHLY_IDS = [1001, 1002, 1003];
@@ -202,6 +240,7 @@ export async function createNativePlatform() {
     share: nativeShare,
     files: nativeFiles,
     notifications: nativeNotifications,
+    paymentCapture: nativePaymentCapture,
     onBackground(callback) {
       App.addListener("appStateChange", ({ isActive }) => {
         if (!isActive) {
