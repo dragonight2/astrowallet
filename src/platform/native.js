@@ -120,6 +120,28 @@ const nativeShare = {
   },
 };
 
+// Salvar arquivo (ex.: relatório em PDF) na pasta Documentos do celular,
+// onde a pessoa encontra pelo app "Arquivos". Só acontece quando ela toca em "Baixar".
+const SAVE_DIR = "Astro Wallet";
+
+const nativeFiles = {
+  async save(blob, name) {
+    try {
+      const { publicStorage } = await Filesystem.checkPermissions();
+      if (publicStorage !== "granted") {
+        const asked = await Filesystem.requestPermissions();
+        if (asked.publicStorage !== "granted") return { ok: false };
+      }
+      const data = bytesToBase64(new Uint8Array(await blob.arrayBuffer()));
+      await Filesystem.writeFile({ path: `${SAVE_DIR}/${name}`, data, directory: Directory.Documents, recursive: true });
+      return { ok: true, where: `Documentos/${SAVE_DIR}` };
+    } catch (err) {
+      console.warn("Não foi possível salvar o arquivo", err);
+      return { ok: false };
+    }
+  },
+};
+
 // Notificações locais: agendadas e mostradas pelo próprio celular, sem internet.
 // Usamos ids fixos para poder trocar o agendamento sem duplicar avisos.
 const MONTHLY_IDS = [1001, 1002, 1003];
@@ -178,6 +200,7 @@ export async function createNativePlatform() {
     storage: new EncryptedStorage({ fs: files, keyStore }),
     auth: nativeAuth,
     share: nativeShare,
+    files: nativeFiles,
     notifications: nativeNotifications,
     onBackground(callback) {
       App.addListener("appStateChange", ({ isActive }) => {

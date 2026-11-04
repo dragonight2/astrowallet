@@ -66,7 +66,7 @@ function limitPopup(ctx, crossings) {
   const otherMonth = crossings[0].month !== currentMonth() ? ` em ${monthName(crossings[0].month)}` : "";
   ctx.ui.openSheet(
     "Alerta de limite",
-    `<div class="pop">
+    `<div class="pop alert-pop">
       <div class="pop-ic ${anyOver ? "over" : "warn"}">${icon("alert")}</div>
       <h2>${anyOver ? "Você passou do limite" : "Você está perto do limite"}</h2>
       <p class="muted">${anyOver ? `Os gastos${otherMonth} já passaram do valor que você definiu.` : `Os gastos${otherMonth} já chegaram a 80% do valor que você definiu.`}</p>
@@ -94,7 +94,7 @@ function reportPopup(ctx, month) {
   const totals = monthTotals(ctx.store.state, month);
   ctx.ui.openSheet(
     "Relatório do mês",
-    `<div class="pop">
+    `<div class="pop alert-pop">
       <div class="pop-ic">${icon("chart")}</div>
       <h2>Relatório de ${monthName(month)} pronto</h2>
       <p class="muted">O mês fechou. Seu relatório em PDF já pode ser baixado ou compartilhado.</p>

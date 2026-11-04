@@ -81,17 +81,36 @@ function render(ctx) {
     <p class="hint center">O relatório sai em PDF, com a logo da Astro Wallet, pronto para enviar ou imprimir.</p>`;
 }
 
-let downloadUrl = null;
+// PDF gerado por último, guardado enquanto a folha de opções está aberta.
+let generated = null; // { report, pdf, pages }
 
-/** Quando o navegador não abre o compartilhamento: baixar o PDF ou copiar o texto. */
-function showFallback(ctx, report, pdfBlob) {
-  if (downloadUrl) URL.revokeObjectURL(downloadUrl);
-  downloadUrl = URL.createObjectURL(pdfBlob);
+/** Folha de opções depois de gerar: Baixar PDF ou Compartilhar. */
+function showExportOptions(ctx) {
+  const { report, pdf, pages } = generated;
+  const sizeKb = Math.max(1, Math.round(pdf.size / 1024));
   ctx.ui.openSheet(
     "Relatório em PDF",
+    `<div class="pop">
+      <div class="pop-ic">${icon("file")}</div>
+      <h2>Relatório de ${escapeHtml(report.label.toLowerCase())}</h2>
+      <p class="muted">${pages} ${pages === 1 ? "página" : "páginas"} · ${sizeKb} KB · com gráfico de gastos por área</p>
+      <div class="row2">
+        <button class="btn soft" data-action="report:download">${icon("download")} Baixar PDF</button>
+        <button class="btn" data-action="report:send">${icon("share")} Compartilhar</button>
+      </div>
+      <p class="hint center">Baixar guarda o arquivo no celular. Compartilhar abre WhatsApp, e-mail, Drive e outros.</p>
+    </div>`,
+  );
+}
+
+/** Quando o navegador não abre o compartilhamento: copiar o texto do relatório. */
+function showTextFallback(ctx) {
+  const { report } = generated;
+  ctx.ui.openSheet(
+    "Compartilhar relatório",
     `<div class="form">
     <p class="muted">Este navegador não abriu o menu de compartilhamento. Baixe o PDF ou copie o texto do relatório.</p>
-    <a class="btn" href="${downloadUrl}" download="${reportFileName(report)}" target="_blank" rel="noopener">${icon("download")} Baixar PDF</a>
+    <button class="btn" data-action="report:download">${icon("download")} Baixar PDF</button>
     <textarea id="r-body" class="field mono" readonly>${escapeHtml(`${reportTitle(report)}\n\n${reportText(report)}`)}</textarea>
     <button class="btn soft" data-action="report:copy">${icon("copy")} Copiar texto</button>
     <p class="hint">No app instalado, este botão abre direto as opções do celular.</p>
@@ -107,33 +126,51 @@ export default {
     order: 40,
     hero,
     render,
-    primaryAction: { label: "Gerar relatório e compartilhar", icon: "share", action: "report:share" },
+    primaryAction: { label: "Gerar relatório em PDF", icon: "file", action: "report:share" },
   },
   init(ctx) {
     const { store, app, ui, services } = ctx;
     registerActions({
-      // data-month opcional: compartilhar o relatório de outro mês (ex.: aviso de fim de mês).
+      // Gera o PDF e mostra as opções. data-month opcional: relatório de outro mês
+      // (ex.: aviso de fim de mês).
       "report:share": async (button) => {
         const report = buildReport(store.state, button?.dataset?.month || app.month);
         if (report.empty) return ui.toast("Ainda não há lançamentos neste mês");
-        button.disabled = true;
-        ui.toast("Gerando PDF…");
-        let pdf;
+        if (button) button.disabled = true;
         try {
-          pdf = buildReportPdf(report).output("blob");
+          const doc = buildReportPdf(report);
+          generated = { report, pdf: doc.output("blob"), pages: doc.getNumberOfPages() };
         } catch (err) {
-          button.disabled = false;
           console.error(err);
           return ui.toast("Não foi possível gerar o PDF. Tente de novo.");
+        } finally {
+          if (button) button.disabled = false;
         }
+        showExportOptions(ctx);
+      },
+      "report:download": async (button) => {
+        if (!generated) return;
+        button.disabled = true;
+        const saved = await services.platform.files.save(generated.pdf, reportFileName(generated.report));
+        button.disabled = false;
+        if (!saved.ok) return ui.toast("Não foi possível salvar. Tente Compartilhar.");
+        ui.closeSheet();
+        ui.toast(`PDF salvo em ${saved.where}`);
+      },
+      "report:send": async (button) => {
+        if (!generated) return;
+        const { report, pdf } = generated;
+        button.disabled = true;
         const result = await services.share.share({
           title: reportTitle(report),
           text: `${reportTitle(report)} (PDF)`,
           file: makeFile(pdf, reportFileName(report), "application/pdf"),
         });
         button.disabled = false;
-        if (result === "shared") ui.toast("Relatório compartilhado");
-        else if (result === "unsupported") showFallback(ctx, report, pdf);
+        if (result === "shared") {
+          ui.closeSheet();
+          ui.toast("Relatório compartilhado");
+        } else if (result === "unsupported") showTextFallback(ctx);
       },
       "report:copy": async () => {
         const textarea = $("#r-body");

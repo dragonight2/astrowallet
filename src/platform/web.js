@@ -57,6 +57,19 @@ export const webShare = {
   },
 };
 
+/** Baixa um arquivo pelo navegador (vai para a pasta de downloads). */
+const webFiles = {
+  async save(blob, name) {
+    const url = URL.createObjectURL(blob);
+    const link = Object.assign(document.createElement("a"), { href: url, download: name, rel: "noopener" });
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+    return { ok: true, where: "Downloads" };
+  },
+};
+
 /** O navegador não agenda notificações com o app fechado; os avisos ficam só dentro do app. */
 const noNotifications = {
   kind: "none",
@@ -74,6 +87,7 @@ export async function createWebPlatform() {
     storage: new LocalStorageAdapter(STORAGE_KEY, LEGACY_KEYS),
     auth: simulatedAuth,
     share: webShare,
+    files: webFiles,
     notifications: noNotifications,
     onBackground(callback) {
       document.addEventListener("visibilitychange", () => {
