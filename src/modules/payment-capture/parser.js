@@ -15,10 +15,10 @@ const IGNORE_RE =
   /\b(oferta|promo|cashback dispon|ganhe|ganhou|fatura (fechou|vence|dispon)|vence (hoje|amanh)|boleto gerado|lembrete|agendad|programad|código|senha|token|negad|recusad|não aprovad|nao aprovad|cancelad|estornad em|empréstimo|emprestimo|investi|rendeu|rendimento|aumentamos)/i;
 
 const INCOME_RE =
-  /\b(recebeu|recebido|recebida|você recebeu|voce recebeu|caiu na sua conta|depósito|deposito|crédito em conta|credito em conta|estorno|reembolso|devolução|devolucao)\b/i;
+  /\b(recebeu|recebido|recebida|você recebeu|voce recebeu|caiu na sua conta|entrou na sua conta|depósito|deposito|crédito em conta|credito em conta|creditad[oa]s?|recebimento|estorno|reembolso|devolução|devolucao)\b/i;
 
 const EXPENSE_RE =
-  /\b(compra|comprou|pagamento|pagou|pago|pix enviado|transferência enviada|transferencia enviada|você enviou|voce enviou|débito|debito|aprovad|gastou|saque)\b/i;
+  /\b(compra|comprou|pagamento|pagou|pago|pix enviado|enviad[oa]s?|transferiu|você enviou|voce enviou|débito|debito|aprovad|gastou|saque)\b/i;
 
 const clean = (text) =>
   String(text || "")

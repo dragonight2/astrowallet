@@ -63,3 +63,25 @@ test("sugere área pelo nome da loja e lembra a escolha anterior", () => {
   assert.equal(suggestCategory("Empresa Qualquer", cats), null);
   assert.equal(suggestCategory("Empresa Qualquer", cats, { "empresa qualquer": "c8" }), "c8");
 });
+
+test("recebimentos: transferência, TED, depósito e crédito em conta", () => {
+  const cases = [
+    ["Transferência recebida", "Você recebeu uma transferência de R$ 350,00 de CARLOS ALBERTO."],
+    ["TED recebida", "TED de R$ 1.000,00 recebida de EMPRESA XYZ LTDA."],
+    ["Pix", "Pix de R$ 75,00 recebido de Ana Souza."],
+    ["Depósito", "Depósito de R$ 500,00 na sua conta."],
+    ["Salário", "Crédito de salário de R$ 3.200,00 creditado na sua conta."],
+  ];
+  for (const [title, text] of cases) {
+    const p = parse("com.itau", title, text);
+    assert.equal(p?.type, "income", text);
+  }
+  assert.equal(parse("com.itau", "Pix", "Pix de R$ 75,00 recebido de Ana Souza.").description, "Ana Souza");
+  assert.equal(parse("com.itau", "TED", "TED de R$ 1.000,00 recebida de EMPRESA XYZ LTDA.").description, "Empresa Xyz Ltda");
+});
+
+test("envios: TED enviada e transferência para outra pessoa", () => {
+  const ted = parse("com.bradesco", "TED enviada", "TED de R$ 800,00 enviada para JOSE SILVA.");
+  assert.deepEqual([ted.type, ted.amount, ted.description], ["expense", 80000, "Jose Silva"]);
+  assert.equal(parse("com.bradesco", "Pix agendado", "Pix de R$ 50,00 agendado para amanhã"), null);
+});
