@@ -243,7 +243,11 @@ function settingsHtml(ctx) {
         <span class="setrow-m"><b>Lançar pagamentos das notificações</b><span>Quando você paga com Google Pay, Samsung Pay ou cartão, o app prepara o lançamento sozinho.</span></span>
         <button class="switch" role="switch" aria-checked="false" disabled aria-label="Lançar pagamentos das notificações"></button>
       </div>
-      <div class="note">${icon("help")}<p>Disponível no app Android instalado. O navegador não consegue ler notificações do celular.</p></div>
+      <div class="note">${icon("help")}<p>${
+        capture?.unavailableReason === "store-only"
+          ? "Disponível na versão do app baixada pela Play Store. Fora da loja, o Android não permite instalar apps que leem notificações, para proteger contra golpes."
+          : "Disponível no app Android instalado. O navegador não consegue ler notificações do celular."
+      }</p></div>
     </div>`;
 
   const on = !!data.enabled;

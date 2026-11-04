@@ -87,7 +87,7 @@ const noNotifications = {
  * (Os testes automáticos podem simular o celular definindo
  * window.__astroPaymentCaptureMock antes de o app abrir.)
  */
-const noPaymentCapture = { available: false };
+const noPaymentCapture = { available: false, unavailableReason: "web" };
 
 export async function createWebPlatform() {
   return {

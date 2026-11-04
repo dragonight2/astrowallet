@@ -7,6 +7,7 @@ import android.os.Build;
 import android.provider.Settings;
 import android.service.notification.NotificationListenerService;
 import androidx.core.app.NotificationManagerCompat;
+import com.astronous.astrowallet.BuildConfig;
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
@@ -19,6 +20,7 @@ import org.json.JSONArray;
 
 /**
  * Ponte entre o app (JavaScript, src/platform/native.js) e o Android:
+ *   isSupported   esta versão do app tem a captura? (só a da Play Store)
  *   isGranted     a pessoa já autorizou o acesso a notificações?
  *   openSettings  abre a tela do Android onde se autoriza (direto no Astro Wallet, se possível)
  *   openAppInfo   abre "Informações do app" (para "Permitir configurações restritas")
@@ -31,6 +33,13 @@ public class PaymentCapturePlugin extends Plugin {
 
     private ComponentName listenerComponent() {
         return new ComponentName(getContext(), PaymentNotificationListener.class);
+    }
+
+    @PluginMethod
+    public void isSupported(PluginCall call) {
+        JSObject result = new JSObject();
+        result.put("supported", BuildConfig.PAYMENT_CAPTURE);
+        call.resolve(result);
     }
 
     @PluginMethod
@@ -75,7 +84,7 @@ public class PaymentCapturePlugin extends Plugin {
 
     @PluginMethod
     public void setEnabled(PluginCall call) {
-        boolean enabled = Boolean.TRUE.equals(call.getBoolean("enabled", false));
+        boolean enabled = BuildConfig.PAYMENT_CAPTURE && Boolean.TRUE.equals(call.getBoolean("enabled", false));
         Set<String> packages = toSet(call.getArray("packages", new JSArray()));
         PaymentCaptureStore.setEnabled(getContext(), enabled, packages);
         if (enabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Só na versão da Play Store ("loja"): o serviço que lê as notificações de pagamento.
+  Fora da Play Store, o Android no Brasil bloqueia a instalação de apps com essa
+  permissão (proteção contra golpes do Play Protect), por isso a versão "direto" não tem.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <!-- Captura automática de pagamentos: só funciona depois que a pessoa
+             autoriza em Configurações > Acesso a notificações. -->
+        <service
+            android:name="com.astronous.astrowallet.paymentcapture.PaymentNotificationListener"
+            android:label="Astro Wallet: pagamentos"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>

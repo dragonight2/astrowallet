@@ -150,7 +150,8 @@ const nativeFiles = {
 const PaymentCapturePlugin = registerPlugin("PaymentCapture");
 
 const nativePaymentCapture = {
-  available: Capacitor.getPlatform() === "android",
+  available: false, // definido em createNativePlatform: só a versão da Play Store tem a captura
+  unavailableReason: "store-only",
   async isGranted() {
     try {
       return (await PaymentCapturePlugin.isGranted()).granted === true;
@@ -230,8 +231,19 @@ async function clearShareCache() {
   } catch {}
 }
 
+/** A versão instalada tem a captura? (a versão "direto", baixada do GitHub, não tem) */
+async function paymentCaptureSupported() {
+  if (Capacitor.getPlatform() !== "android") return false;
+  try {
+    return (await PaymentCapturePlugin.isSupported()).supported === true;
+  } catch {
+    return false;
+  }
+}
+
 export async function createNativePlatform() {
   await SecureStorage.setSynchronize(false);
+  nativePaymentCapture.available = await paymentCaptureSupported();
   await clearShareCache();
   return {
     kind: "native",

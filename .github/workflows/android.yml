@@ -82,21 +82,33 @@ jobs:
         working-directory: android
         run: |
           chmod +x gradlew
-          ./gradlew --no-daemon assembleRelease
+          # direto: APK para baixar do GitHub (sem captura de pagamentos)
+          # loja:   pacote .aab para enviar à Play Store (completo)
+          ./gradlew --no-daemon assembleDiretoRelease bundleLojaRelease
 
       - name: Conferir a assinatura
         if: env.AW_SIGNED == 'true'
         run: |
-          APK=android/app/build/outputs/apk/release/app-release.apk
+          APK=android/app/build/outputs/apk/direto/release/app-direto-release.apk
           "$ANDROID_HOME"/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)/apksigner verify --print-certs "$APK" | head -5
           mkdir -p out
           cp "$APK" "out/AstroWallet-${AW_VERSION_NAME}.apk"
+          mkdir -p loja
+          cp android/app/build/outputs/bundle/lojaRelease/app-loja-release.aab "loja/AstroWallet-PlayStore-${AW_VERSION_NAME}.aab"
 
       - uses: actions/upload-artifact@v4
         if: env.AW_SIGNED == 'true'
         with:
           name: AstroWallet-${{ env.AW_VERSION_NAME }}
           path: out/*.apk
+
+      # Pacote da Play Store: fica guardado aqui (aba Actions → esta execução → Artifacts)
+      # para enviar ao Play Console. Não vai para Releases.
+      - uses: actions/upload-artifact@v4
+        if: env.AW_SIGNED == 'true'
+        with:
+          name: PlayStore-${{ env.AW_VERSION_NAME }}
+          path: loja/*.aab
 
       - name: Publicar para download (Releases)
         if: env.AW_SIGNED == 'true'
@@ -105,5 +117,5 @@ jobs:
         run: |
           gh release create "v${AW_VERSION_NAME}" out/*.apk \
             --title "Astro Wallet ${AW_VERSION_NAME}" \
-            --notes "APK para instalar no Android. Toque no arquivo .apk abaixo para baixar. Instale por cima da versão anterior: os dados são mantidos." \
+            --notes "APK para instalar no Android (versão de instalação direta, sem a captura automática de pagamentos, que só está disponível pela Play Store). Toque no arquivo .apk abaixo para baixar. Instale por cima da versão anterior: os dados são mantidos." \
             --latest

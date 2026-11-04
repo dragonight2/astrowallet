@@ -32,6 +32,24 @@ android {
             }
         }
     }
+    // Duas versões do mesmo app:
+    //   loja   → Play Store, completa (com captura de pagamentos pelas notificações)
+    //   direto → APK para instalar baixando do GitHub, sem a captura
+    //            (o Play Protect bloqueia, fora da loja, apps que leem notificações)
+    flavorDimensions = ["distribuicao"]
+    productFlavors {
+        loja {
+            dimension "distribuicao"
+            buildConfigField "boolean", "PAYMENT_CAPTURE", "true"
+        }
+        direto {
+            dimension "distribuicao"
+            buildConfigField "boolean", "PAYMENT_CAPTURE", "false"
+        }
+    }
+    buildFeatures {
+        buildConfig = true
+    }
     buildTypes {
         release {
             if (System.getenv("ANDROID_KEYSTORE_PASSWORD")) signingConfig signingConfigs.release
