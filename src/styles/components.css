@@ -258,3 +258,9 @@ body:has(#app.has-primary) .toast { bottom: calc(136px + env(safe-area-inset-bot
 .rv-note.warn { color: var(--warn); font-weight: 600; }
 .rv-actions { display: grid; grid-template-columns: 1fr 1fr 1.3fr; gap: 6px; }
 .rv-actions .btn.sm { width: 100%; padding-inline: 8px; }
+
+/* Backup protegido por senha */
+.showpass { display: flex; align-items: center; gap: 8px; padding: 4px; font-size: 14px; color: var(--muted); }
+.showpass input { width: 18px; height: 18px; accent-color: var(--accent); }
+.note.warnnote { border-top: 0; margin: 4px 0; padding: 12px; border-radius: 12px; background: var(--fill); color: var(--text); }
+.note.warnnote svg { color: var(--warn); }

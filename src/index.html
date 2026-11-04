@@ -3,16 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!--
+  Regra de segurança da página (Content Security Policy):
+  o app só carrega arquivos dele mesmo e NÃO consegue se conectar a nenhum
+  servidor da internet. Mesmo que algum código malicioso fosse injetado,
+  ele não teria para onde mandar os dados.
+-->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#FFFFFF">
 <title>Astro Wallet</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2215%22%20fill%3D%22%230A0A0B%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20opacity%3D%22.55%22%20d%3D%22M14%2024a6%206%200%200%201%206-6h20a3%203%200%200%201%200%206z%22%2F%3E%3Crect%20fill%3D%22%23fff%22%20x%3D%2211%22%20y%3D%2223%22%20width%3D%2240%22%20height%3D%2228%22%20rx%3D%227%22%2F%3E%3Crect%20fill%3D%22%230A0A0B%22%20x%3D%2235%22%20y%3D%2230.5%22%20width%3D%2219%22%20height%3D%2213%22%20rx%3D%226.5%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22M44.5%2032.4l1.2%203.4%203.4%201.2-3.4%201.2-1.2%203.4-1.2-3.4-3.4-1.2%203.4-1.2z%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22M50%208l1.2%203.3%203.3%201.2-3.3%201.2L50%2017l-1.2-3.3-3.3-1.2%203.3-1.2z%22%2F%3E%3Ccircle%20fill%3D%22%23fff%22%20cx%3D%2216%22%20cy%3D%2211%22%20r%3D%221.6%22%2F%3E%3Ccircle%20fill%3D%22%23fff%22%20cx%3D%2231%22%20cy%3D%229%22%20r%3D%221.1%22%2F%3E%3C%2Fsvg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap">
+<link rel="preload" href="assets/manrope.woff2" as="font" type="font/woff2" crossorigin>
 <style>/*STYLES*/</style>
+<script type="module" src="%MAIN%"></script>
 </head>
 <body>
 <div id="app"></div>
 <div id="layer"></div>
-<script>/*SCRIPT*/</script>
 </body>
 </html>

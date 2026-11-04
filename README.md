@@ -14,11 +14,12 @@ sem servidor, sem conta e sem login.
 ```bash
 npm install
 npm test            # testes automáticos
-npm run build:web   # gera o index.html da raiz (GitHub Pages) e dist/index.html
+npm run build:web   # gera dist/ e atualiza index.html + assets/ na raiz (GitHub Pages)
 npm run dev         # o mesmo, refazendo a cada mudança em src/
 ```
 
-`index.html` na raiz e `dist/` são **gerados** — não edite à mão; edite `src/` e rode o build.
+`index.html`, `assets/` (na raiz) e `dist/` são **gerados**: não edite à mão; edite `src/` e rode o build.
+O gerador de PDF fica num arquivo separado em `assets/`, carregado só quando a pessoa gera um relatório.
 
 ## Organização do código
 
@@ -71,4 +72,7 @@ sem mexer no formato principal.
 - **Nunca perder dados numa atualização.** Mudou o formato? Aumente `SCHEMA_VERSION` em
   `src/data/schema.js` e escreva a migração. O app guarda uma cópia antes de migrar.
 - **Todo texto do usuário passa por `escapeHtml`** antes de ir para a tela.
-- **Nada sai do aparelho** sem a pessoa tocar em compartilhar.
+- **Nada sai do aparelho** sem a pessoa tocar em compartilhar. A página tem uma regra de segurança
+  (Content-Security-Policy em `src/index.html`) que impede qualquer conexão com a internet; a fonte
+  fica dentro do app. Não acrescente recursos externos (CDN, fontes, analytics).
+- **Backup sai sempre protegido por senha** (PBKDF2 + AES-256-GCM, `src/data/backup-crypto.js`).

@@ -9,7 +9,6 @@ import { makeFile } from "../../platform/index.js";
 import { circleIcon, emptyState, money, sectionTitle } from "../../ui/components.js";
 import { icon } from "../../ui/icons.js";
 import { buildReport } from "./report-data.js";
-import { buildReportPdf } from "./report-pdf.js";
 import { reportFileName, reportText, reportTitle } from "./report-text.js";
 
 /** Seta de variação. Para despesas, cair é bom (lowerIsBetter). */
@@ -138,6 +137,9 @@ export default {
         if (report.empty) return ui.toast("Ainda não há lançamentos neste mês");
         if (button) button.disabled = true;
         try {
+          // O gerador de PDF (biblioteca jsPDF) só é carregado agora, na primeira vez
+          // que a pessoa gera um relatório. Assim o app abre mais rápido.
+          const { buildReportPdf } = await import("./report-pdf.js");
           const doc = buildReportPdf(report);
           generated = { report, pdf: doc.output("blob"), pages: doc.getNumberOfPages() };
         } catch (err) {
