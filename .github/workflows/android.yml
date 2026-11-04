@@ -30,8 +30,10 @@ jobs:
       - name: Conferir o segredo da chave de assinatura
         run: |
           if [ -z "$ANDROID_KEYSTORE_PASSWORD" ]; then
-            echo "::error::Falta o segredo ANDROID_KEYSTORE_PASSWORD (Settings → Secrets and variables → Actions)."
-            exit 1
+            echo "::warning::Falta o segredo ANDROID_KEYSTORE_PASSWORD (Settings → Secrets and variables → Actions). O APK será compilado só para conferência, sem assinatura e sem publicar."
+            echo "AW_SIGNED=false" >> "$GITHUB_ENV"
+          else
+            echo "AW_SIGNED=true" >> "$GITHUB_ENV"
           fi
 
       - uses: actions/checkout@v4
@@ -71,6 +73,7 @@ jobs:
           ./gradlew --no-daemon assembleRelease
 
       - name: Conferir a assinatura
+        if: env.AW_SIGNED == 'true'
         run: |
           APK=android/app/build/outputs/apk/release/app-release.apk
           "$ANDROID_HOME"/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)/apksigner verify --print-certs "$APK" | head -5
@@ -78,11 +81,13 @@ jobs:
           cp "$APK" "out/AstroWallet-${AW_VERSION_NAME}.apk"
 
       - uses: actions/upload-artifact@v4
+        if: env.AW_SIGNED == 'true'
         with:
           name: AstroWallet-${{ env.AW_VERSION_NAME }}
           path: out/*.apk
 
       - name: Publicar para download (Releases)
+        if: env.AW_SIGNED == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
