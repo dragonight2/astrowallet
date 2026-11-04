@@ -112,8 +112,9 @@ export default {
   init(ctx) {
     const { store, app, ui, services } = ctx;
     registerActions({
+      // data-month opcional: compartilhar o relatório de outro mês (ex.: aviso de fim de mês).
       "report:share": async (button) => {
-        const report = buildReport(store.state, app.month);
+        const report = buildReport(store.state, button?.dataset?.month || app.month);
         if (report.empty) return ui.toast("Ainda não há lançamentos neste mês");
         button.disabled = true;
         ui.toast("Gerando PDF…");

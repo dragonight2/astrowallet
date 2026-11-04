@@ -3,6 +3,7 @@
 //   2. importe e acrescente aqui.
 // A ordem na tela é definida pelo campo `order` de cada módulo, não por esta lista.
 
+import alerts from "./alerts.js";
 import appearance from "./appearance.js";
 import backup from "./backup.js";
 import dataSafety from "./data-safety.js";
@@ -28,5 +29,6 @@ export const MODULES = [
   settings,
   appearance,
   hideValues,
+  alerts,
   backup,
 ];

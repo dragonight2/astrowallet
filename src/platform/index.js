@@ -1,5 +1,5 @@
 // Escolhe a plataforma: app instalado (native) ou prévia no navegador (web).
-// Todas oferecem a mesma interface: { kind, storage, auth, share, onBackground }.
+// Todas oferecem a mesma interface: { kind, storage, auth, share, notifications, onBackground }.
 // O resto do app não sabe em qual está rodando.
 
 import { Capacitor } from "@capacitor/core";

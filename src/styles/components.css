@@ -207,3 +207,23 @@
 .primary-btn:active { transform: scale(.98); }
 #app.has-primary { padding-bottom: calc(170px + env(safe-area-inset-bottom, 0px)); }
 body:has(#app.has-primary) .toast { bottom: calc(136px + env(safe-area-inset-bottom, 0px)); }
+
+/* Pop-ups de aviso (alerta de limite, relatório do mês) — módulo alerts */
+.pop { display: grid; gap: 12px; text-align: center; padding-bottom: 4px; }
+.pop h2 { margin: 0; font-family: var(--display); font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+.pop > .muted { margin: -4px 0 4px; font-size: 15px; line-height: 1.45; }
+.pop-ic { width: 56px; height: 56px; margin: 4px auto 0; border-radius: 50%; display: grid; place-items: center; font-size: 26px; background: var(--accent); color: var(--on-accent); }
+.pop-ic.warn { background: var(--warn); color: #FFFFFF; }
+.pop-ic.over { background: var(--danger); color: #FFFFFF; }
+.pop-list { text-align: left; }
+.pop-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.pop-stats div { background: var(--card); border-radius: 12px; padding: 10px 6px; display: grid; gap: 2px; }
+.pop-stats span { font-size: 12px; color: var(--muted); }
+.pop-stats b { font-size: 14px; font-weight: 700; }
+.pop-list { padding-block: 2px; }
+.pop-row { display: flex; align-items: center; gap: 12px; padding-block: 10px; }
+.pop-row + .pop-row { border-top: .5px solid var(--sep); }
+.pop-row .ci { background: var(--fill-2); }
+.pop-row b { display: block; font-weight: 600; }
+.pop-row p { margin: 2px 0 0; font-size: 13px; color: var(--muted); }
+.pop-row p.bad { color: var(--danger); }

@@ -57,12 +57,24 @@ export const webShare = {
   },
 };
 
+/** O navegador não agenda notificações com o app fechado; os avisos ficam só dentro do app. */
+const noNotifications = {
+  kind: "none",
+  async ensurePermission() {
+    return false;
+  },
+  async scheduleMonthly() {},
+  async cancelMonthly() {},
+  onOpen() {},
+};
+
 export async function createWebPlatform() {
   return {
     kind: "web",
     storage: new LocalStorageAdapter(STORAGE_KEY, LEGACY_KEYS),
     auth: simulatedAuth,
     share: webShare,
+    notifications: noNotifications,
     onBackground(callback) {
       document.addEventListener("visibilitychange", () => {
         if (document.hidden) callback();

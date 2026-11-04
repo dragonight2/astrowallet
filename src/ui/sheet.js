@@ -45,6 +45,7 @@ export function confirmSheet({ title, text, confirmLabel, onConfirm }) {
 
 /** Aviso rápido no rodapé, some sozinho em 2 segundos. */
 export function toast(message) {
+  if (layer?.querySelector(".pop")) return; // um pop-up de aviso já está na tela
   document.querySelector(".toast")?.remove();
   const el = document.createElement("div");
   el.className = "toast";

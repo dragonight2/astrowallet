@@ -112,6 +112,8 @@ export function startApp({ store, root, layer, services }) {
       <nav class="tabbar" aria-label="Seções"><div class="tabbar-in">
         ${tabs.map((t) => `<button class="${t.id === tab.id ? "on" : ""} ${t.home ? "home" : ""}" data-action="tab:go" data-tab="${t.id}" ${t.id === tab.id ? 'aria-current="page"' : ""}>${t.home ? `<span class="home-ic">${icon(t.icon)}</span>` : icon(t.icon)}<span>${escapeHtml(t.label)}</span></button>`).join("")}
       </div></nav>`;
+    // A carteira está visível (sem tela de bloqueio/cadastro): módulos podem mostrar avisos.
+    events.emit("view:rendered", { tab: tab.id, month: view.month });
   }
 
   registerActions({

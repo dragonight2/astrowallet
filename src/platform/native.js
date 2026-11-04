@@ -3,11 +3,13 @@
 //   - chave guardada no cofre do sistema (SecureStorage → Android Keystore)
 //   - entrada com digital, rosto ou PIN do próprio celular (BiometricAuth)
 //   - compartilhamento pelo menu nativo do sistema (Share)
+//   - notificações locais agendadas no próprio celular (LocalNotifications)
 
 import { BiometricAuth } from "@aparajita/capacitor-biometric-auth";
 import { KeychainAccess, SecureStorage } from "@aparajita/capacitor-secure-storage";
 import { App } from "@capacitor/app";
 import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
+import { LocalNotifications } from "@capacitor/local-notifications";
 import { Share } from "@capacitor/share";
 import { base64ToBytes, bytesToBase64 } from "./crypto.js";
 import { EncryptedStorage } from "./encrypted-storage.js";
@@ -118,6 +120,49 @@ const nativeShare = {
   },
 };
 
+// Notificações locais: agendadas e mostradas pelo próprio celular, sem internet.
+// Usamos ids fixos para poder trocar o agendamento sem duplicar avisos.
+const MONTHLY_IDS = [1001, 1002, 1003];
+
+const nativeNotifications = {
+  kind: "native",
+  /** Pede permissão só quando necessário (Android 13+ mostra a pergunta uma vez). */
+  async ensurePermission() {
+    try {
+      let { display } = await LocalNotifications.checkPermissions();
+      if (display === "prompt" || display === "prompt-with-rationale")
+        ({ display } = await LocalNotifications.requestPermissions());
+      return display === "granted";
+    } catch {
+      return false;
+    }
+  },
+  /** Agenda os próximos avisos mensais: [{ at: Date, title, body, extra }]. */
+  async scheduleMonthly(items) {
+    await this.cancelMonthly();
+    await LocalNotifications.schedule({
+      notifications: items.slice(0, MONTHLY_IDS.length).map((item, i) => ({
+        id: MONTHLY_IDS[i],
+        title: item.title,
+        body: item.body,
+        schedule: { at: item.at, allowWhileIdle: true },
+        extra: item.extra,
+      })),
+    });
+  },
+  async cancelMonthly() {
+    try {
+      await LocalNotifications.cancel({ notifications: MONTHLY_IDS.map((id) => ({ id })) });
+    } catch {}
+  },
+  /** Chamado quando a pessoa toca numa notificação do app. */
+  onOpen(callback) {
+    LocalNotifications.addListener("localNotificationActionPerformed", ({ notification }) =>
+      callback(notification?.extra || {}),
+    );
+  },
+};
+
 /** Apaga os arquivos temporários de compartilhamento (relatórios e backups). */
 async function clearShareCache() {
   try {
@@ -133,6 +178,7 @@ export async function createNativePlatform() {
     storage: new EncryptedStorage({ fs: files, keyStore }),
     auth: nativeAuth,
     share: nativeShare,
+    notifications: nativeNotifications,
     onBackground(callback) {
       App.addListener("appStateChange", ({ isActive }) => {
         if (!isActive) {
