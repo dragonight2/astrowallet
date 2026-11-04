@@ -10,6 +10,10 @@ function applyTheme(theme) {
   document.documentElement.classList.toggle("app-dark", dark);
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.content = dark ? "#000000" : "#FFFFFF";
+  // Lembrete só do tema, para a tela de abertura já abrir na cor certa (assets/theme-boot.js).
+  try {
+    localStorage.setItem("astro-wallet:theme", dark ? "dark" : "light");
+  } catch {}
 }
 
 export default {

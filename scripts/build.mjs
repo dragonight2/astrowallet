@@ -8,6 +8,7 @@
 //   assets/main-*.js      o app
 //   assets/*-*.js         partes carregadas só quando usadas (ex.: gerador de PDF)
 //   assets/manrope.woff2  a fonte, dentro do app (nada vem da internet)
+//   assets/astronous.png, assets/theme-boot.js  arquivos fixos de src/static/
 
 import { build, context } from "esbuild";
 import { copyFile, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
@@ -16,7 +17,7 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const args = new Set(process.argv.slice(2));
-const STYLES = ["fonts", "page", "tokens", "base", "layout", "components", "screens"];
+const STYLES = ["fonts", "page", "tokens", "base", "layout", "components", "screens", "splash"];
 const FONT_SRC = join(root, "node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2");
 const DIST = join(root, "dist");
 
@@ -42,6 +43,8 @@ async function assemble(result) {
   await mkdir(join(DIST, "assets"), { recursive: true });
   for (const f of outputs) await writeFile(join(DIST, "assets", basename(f.path)), f.contents);
   await copyFile(FONT_SRC, join(DIST, "assets/manrope.woff2"));
+  // Arquivos fixos (logo Astronous, script do tema) vão junto, com o mesmo nome.
+  for (const name of await readdir(join(root, "src/static"))) await copyFile(join(root, "src/static", name), join(DIST, "assets", name));
 
   const template = await readFile(join(root, "src/index.html"), "utf8");
   const css = (await Promise.all(STYLES.map((n) => readFile(join(root, `src/styles/${n}.css`), "utf8")))).join("\n");

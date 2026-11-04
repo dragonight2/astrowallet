@@ -15,10 +15,29 @@
 <title>Astro Wallet</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2215%22%20fill%3D%22%230A0A0B%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20opacity%3D%22.55%22%20d%3D%22M14%2024a6%206%200%200%201%206-6h20a3%203%200%200%201%200%206z%22%2F%3E%3Crect%20fill%3D%22%23fff%22%20x%3D%2211%22%20y%3D%2223%22%20width%3D%2240%22%20height%3D%2228%22%20rx%3D%227%22%2F%3E%3Crect%20fill%3D%22%230A0A0B%22%20x%3D%2235%22%20y%3D%2230.5%22%20width%3D%2219%22%20height%3D%2213%22%20rx%3D%226.5%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22M44.5%2032.4l1.2%203.4%203.4%201.2-3.4%201.2-1.2%203.4-1.2-3.4-3.4-1.2%203.4-1.2z%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22M50%208l1.2%203.3%203.3%201.2-3.3%201.2L50%2017l-1.2-3.3-3.3-1.2%203.3-1.2z%22%2F%3E%3Ccircle%20fill%3D%22%23fff%22%20cx%3D%2216%22%20cy%3D%2211%22%20r%3D%221.6%22%2F%3E%3Ccircle%20fill%3D%22%23fff%22%20cx%3D%2231%22%20cy%3D%229%22%20r%3D%221.1%22%2F%3E%3C%2Fsvg%3E">
 <link rel="preload" href="assets/manrope.woff2" as="font" type="font/woff2" crossorigin>
+<script src="assets/theme-boot.js"></script>
 <style>/*STYLES*/</style>
 <script type="module" src="%MAIN%"></script>
 </head>
 <body>
+<!-- Tela de abertura: aparece na hora (antes do app carregar) e some quando ele está pronto. -->
+<div id="splash" aria-hidden="true">
+  <div class="sp-center">
+    <div class="sp-mark">
+      <svg viewBox="0 0 64 64">
+        <path style="fill:var(--mark-fg);opacity:.55" d="M14 24a6 6 0 0 1 6-6h20a3 3 0 0 1 0 6z"/>
+        <rect style="fill:var(--mark-fg)" x="11" y="23" width="40" height="28" rx="7"/>
+        <rect style="fill:var(--mark-bg)" x="35" y="30.5" width="19" height="13" rx="6.5"/>
+        <path class="sp-star s1" style="fill:var(--mark-fg)" d="M44.5 32.4l1.2 3.4 3.4 1.2-3.4 1.2-1.2 3.4-1.2-3.4-3.4-1.2 3.4-1.2z"/>
+        <path class="sp-star s2" style="fill:var(--mark-fg)" d="M50 8l1.2 3.3 3.3 1.2-3.3 1.2L50 17l-1.2-3.3-3.3-1.2 3.3-1.2z"/>
+        <circle class="sp-dot" style="fill:var(--mark-fg)" cx="16" cy="11" r="1.6"/>
+        <circle class="sp-dot" style="fill:var(--mark-fg)" cx="31" cy="9" r="1.1"/>
+      </svg>
+    </div>
+    <div class="sp-name"><b>Astro</b><i>Wallet</i></div>
+  </div>
+  <div class="sp-by"><span>um sistema</span><img src="assets/astronous.png" alt="Astronous" width="150" height="16"></div>
+</div>
 <div id="app"></div>
 <div id="layer"></div>
 </body>

@@ -25,7 +25,10 @@ function render(ctx) {
     ${getSettingsSections()
       .map((section) => `<section>${sectionTitle(section.title)}${section.render(ctx)}</section>`)
       .join("")}
-    <p class="hint center">Astro Wallet · versão ${APP_VERSION}${ctx.services.platform?.kind === "native" ? "" : " · prévia web"}</p>`;
+    <div class="credits">
+      <p class="hint center">Astro Wallet · versão ${APP_VERSION}${ctx.services.platform?.kind === "native" ? "" : " · prévia web"}</p>
+      <span>um sistema</span><img src="assets/astronous.png" alt="Astronous" width="112" height="12">
+    </div>`;
 }
 
 export default {

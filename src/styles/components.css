@@ -264,3 +264,10 @@ body:has(#app.has-primary) .toast { bottom: calc(136px + env(safe-area-inset-bot
 .showpass input { width: 18px; height: 18px; accent-color: var(--accent); }
 .note.warnnote { border-top: 0; margin: 4px 0; padding: 12px; border-radius: 12px; background: var(--fill); color: var(--text); }
 .note.warnnote svg { color: var(--warn); }
+
+/* Assinatura no fim de Ajustes */
+.credits { display: grid; justify-items: center; gap: 6px; margin: 8px 0 4px; }
+.credits .hint { margin: 0; }
+.credits span { font-size: 10px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--faint); }
+.credits img { width: 112px; height: auto; opacity: .85; }
+.app-dark .credits img { filter: invert(1); }

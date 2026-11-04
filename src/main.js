@@ -13,6 +13,19 @@ import { createPlatform } from "./platform/index.js";
 
 MODULES.forEach(registerModule);
 
+const SPLASH_MIN_MS = 1800; // tempo para a animação de abertura terminar
+
+/** Some com a tela de abertura (esmaece) quando o app está pronto. */
+function hideSplash() {
+  const splash = document.getElementById("splash");
+  if (!splash) return;
+  const wait = Math.max(0, SPLASH_MIN_MS - performance.now());
+  setTimeout(() => {
+    splash.classList.add("done");
+    setTimeout(() => splash.remove(), 600);
+  }, wait);
+}
+
 async function boot() {
   const platform = await createPlatform();
 
@@ -49,10 +62,12 @@ async function boot() {
       recoveredFrom: platform.storage.recoveredFrom || null,
     },
   });
+  hideSplash();
 }
 
 boot().catch((err) => {
   console.error(err);
+  hideSplash();
   document.getElementById("app").innerHTML =
     '<div style="padding:40px 24px;font-family:system-ui;text-align:center"><h2>O app não abriu</h2><p>Feche e abra de novo. Seus dados não foram alterados.</p></div>';
 });
