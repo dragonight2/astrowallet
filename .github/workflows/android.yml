@@ -1,0 +1,92 @@
+# Gera o APK do Astro Wallet automaticamente a cada atualização no GitHub
+# e publica em "Releases" para baixar e instalar no celular.
+#
+# Precisa de um único segredo no repositório:
+#   Settings → Secrets and variables → Actions → New repository secret
+#   Nome: ANDROID_KEYSTORE_PASSWORD   Valor: a senha da chave de assinatura
+
+name: APK Android
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-apk
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      AW_VERSION_CODE: ${{ github.run_number }}
+    steps:
+      - name: Conferir o segredo da chave de assinatura
+        run: |
+          if [ -z "$ANDROID_KEYSTORE_PASSWORD" ]; then
+            echo "::error::Falta o segredo ANDROID_KEYSTORE_PASSWORD (Settings → Secrets and variables → Actions)."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Testes automáticos
+        run: npm test
+
+      - name: Montar o app
+        run: npm run build
+
+      - name: Versão
+        run: |
+          BASE=$(node -p "require('./package.json').version")
+          echo "AW_VERSION_NAME=${BASE}.${GITHUB_RUN_NUMBER}" >> "$GITHUB_ENV"
+
+      - name: Copiar o app para o projeto Android
+        run: npx cap sync android
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Compilar o APK assinado
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleRelease
+
+      - name: Conferir a assinatura
+        run: |
+          APK=android/app/build/outputs/apk/release/app-release.apk
+          "$ANDROID_HOME"/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)/apksigner verify --print-certs "$APK" | head -5
+          mkdir -p out
+          cp "$APK" "out/AstroWallet-${AW_VERSION_NAME}.apk"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AstroWallet-${{ env.AW_VERSION_NAME }}
+          path: out/*.apk
+
+      - name: Publicar para download (Releases)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v${AW_VERSION_NAME}" out/*.apk \
+            --title "Astro Wallet ${AW_VERSION_NAME}" \
+            --notes "APK para instalar no Android. Toque no arquivo .apk abaixo para baixar. Instale por cima da versão anterior: os dados são mantidos." \
+            --latest

@@ -7,7 +7,7 @@ sem servidor, sem conta e sem login.
 
 - Prévia no navegador: https://dragonight2.github.io/astrowallet/
   (na prévia a digital é simulada e os dados ficam sem criptografia no navegador; use só para testar)
-- App Android: em preparação (Capacitor)
+- App Android: baixe o APK mais recente em Releases (https://github.com/dragonight2/astrowallet/releases/latest)
 
 ## Como rodar
 
@@ -46,7 +46,8 @@ src/
   ui/                  peças visuais reaproveitadas (ícones, marca, folhas, máscaras)
   modules/             cada funcionalidade num arquivo
   styles/              CSS (tokens de design, base, layout, componentes, telas)
-native/android/        código Kotlin (captura de pagamentos) para o projeto Android
+android/               projeto Android (Capacitor); código próprio em app/src/main/java/com/astronous/astrowallet
+.github/workflows/     gera o APK a cada atualização e publica em Releases
 tests/                 testes automáticos (node --test)
 ```
 
@@ -76,3 +77,14 @@ sem mexer no formato principal.
   (Content-Security-Policy em `src/index.html`) que impede qualquer conexão com a internet; a fonte
   fica dentro do app. Não acrescente recursos externos (CDN, fontes, analytics).
 - **Backup sai sempre protegido por senha** (PBKDF2 + AES-256-GCM, `src/data/backup-crypto.js`).
+
+## App Android
+
+- Projeto em `android/` (Capacitor 8, pacote `com.astronous.astrowallet`).
+- A cada envio para o GitHub, o fluxo `.github/workflows/android.yml` testa, monta, compila e
+  publica o APK assinado em **Releases**.
+- Assinatura: `android/keystore/astrowallet-release.p12`, protegida por senha. A senha fica só no
+  segredo `ANDROID_KEYSTORE_PASSWORD` do repositório. **Nunca troque essa chave**: versões
+  assinadas com outra chave não atualizam o app instalado (seria preciso desinstalar e perder os dados).
+- Proteções: sem permissão de internet, sem backup automático do Android, conteúdo escondido
+  na tela de apps recentes e em capturas de tela (FLAG_SECURE).
