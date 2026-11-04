@@ -356,7 +356,10 @@ export default {
           ui.closeSheet();
           if (!item && f.start !== app.month) app.setMonth(f.start);
           if (item) store.updateInstallment(item.id, fields);
-          else onSaved?.(store.addInstallment(fields));
+          else {
+            const saved = store.addInstallment(fields);
+            if (onSaved) onSaved(saved);
+          }
           return ui.toast(`Compra em ${f.count}x salva`);
         }
 
@@ -364,14 +367,20 @@ export default {
           const day = clampDay($("#f-day").value);
           ui.closeSheet();
           if (item) store.editRecurring(item.id, { description, amount, day, category_id }, app.month);
-          else onSaved?.(store.addRecurring({ type, description, amount, day, category_id, start_month: app.month }));
+          else {
+            const saved = store.addRecurring({ type, description, amount, day, category_id, start_month: app.month });
+            if (onSaved) onSaved(saved);
+          }
         } else {
           const date = $("#f-date").value;
           if (!DATE_RE.test(date)) return setText("f-err", "Escolha uma data válida.");
           ui.closeSheet();
           if (date.slice(0, 7) !== app.month) app.setMonth(date.slice(0, 7));
           if (item) store.updateEntry(item.id, { type, description, amount, category_id, date });
-          else onSaved?.(store.addEntry({ type, description, amount, category_id, date }));
+          else {
+            const saved = store.addEntry({ type, description, amount, category_id, date });
+            if (onSaved) onSaved(saved);
+          }
         }
         ui.toast("Salvo");
       },
