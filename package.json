@@ -1,0 +1,26 @@
+{
+  "name": "astro-wallet",
+  "version": "1.1.0",
+  "private": true,
+  "description": "Astro Wallet — carteira pessoal com dados guardados só no celular.",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:web": "node scripts/build.mjs --web",
+    "test": "node --test tests/*.test.js",
+    "dev": "node scripts/build.mjs --web --watch"
+  },
+  "dependencies": {
+    "@aparajita/capacitor-biometric-auth": "^10.0.0",
+    "@aparajita/capacitor-secure-storage": "^8.0.1",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/core": "^8.6.0",
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/share": "^8.0.3",
+    "@noble/ciphers": "^2.4.0",
+    "jspdf": "^4.2.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}

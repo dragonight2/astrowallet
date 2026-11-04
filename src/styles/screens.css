@@ -1,0 +1,58 @@
+/* ---------- Limites ---------- */
+.intro p { color: var(--muted); font-size: 14px; line-height: 1.5; }
+.intro-total { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; margin-top: 12px; padding-top: 12px; border-top: .5px solid var(--sep); }
+.intro-total span { font-size: 13px; color: var(--muted); }
+.intro-total b { font-family: var(--display); font-weight: 800; font-size: 22px; letter-spacing: -.04em; }
+.intro-total small { font-size: 12px; color: var(--muted); width: 100%; }
+.lim { padding-block: 12px; }
+.lim-row { display: flex; align-items: center; gap: 10px; }
+.lim-who { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; background: none; border: 0; padding: 0; text-align: left; }
+.lim-who > span:last-child { min-width: 0; }
+.lim-who b { display: flex; align-items: center; gap: 5px; font-weight: 600; }
+.lim-who b svg { font-size: 12px; color: var(--faint); }
+.lim-who small { display: block; font-size: 12px; color: var(--muted); margin-top: 1px; }
+.limbox { display: flex; align-items: baseline; gap: 4px; width: 128px; flex: none; padding: 6px 10px; border-radius: 10px; background: var(--surface); }
+.limbox span { color: var(--muted); font-size: 13px; }
+.limbox input { border: 0; background: none; outline: none; width: 100%; min-width: 0; text-align: right; font-weight: 700; padding: 2px 0; }
+.limbox input::placeholder { color: var(--faint); font-weight: 400; }
+.limbox:focus-within { box-shadow: inset 0 0 0 1px var(--accent); }
+
+/* ---------- Relatórios ---------- */
+.kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.kpi { background: var(--card); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 2px; align-content: start; min-width: 0; }
+.kpi.wide { grid-column: 1 / -1; }
+.kpi span { font-size: 13px; color: var(--muted); }
+.kpi b { font-family: var(--display); font-weight: 700; font-size: 22px; line-height: 1.2; letter-spacing: -.035em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kpi.wide b { font-size: 34px; font-weight: 800; letter-spacing: -.05em; }
+.kpi b.out, .kpi b.in { color: var(--text); }
+.kpi small { font-size: 13px; color: var(--muted); }
+.delta { display: inline-flex; align-items: center; gap: 3px; justify-self: start; font-size: 12px; font-weight: 700; padding: 2px 8px 2px 6px; border-radius: 999px; background: var(--surface); margin-top: 4px; }
+.delta svg { stroke-width: 2.4; }
+.delta.bad { color: var(--danger); }
+.delta.good { color: var(--text); }
+.delta.flat { color: var(--muted); font-weight: 500; padding-left: 8px; }
+
+.rbar { padding-block: 12px; }
+.rbar + .rbar { border-top: .5px solid var(--sep); }
+.rbar-h { display: flex; align-items: center; gap: 12px; }
+.rbar-h .n { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rbar-h .v { font-weight: 700; }
+.rbar-track { height: 4px; border-radius: 2px; background: var(--fill-2); overflow: hidden; margin-top: 10px; }
+.rbar-track i { display: block; height: 100%; border-radius: 2px; background: var(--accent); }
+.rbar-track i.over { background: var(--danger); }
+
+.pillrow { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 999px; background: var(--card); }
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.pill.warn::before { background: var(--warn); }
+.pill.over::before { background: var(--danger); }
+
+.toprow { display: flex; align-items: center; gap: 14px; padding-block: 11px; }
+.toprow + .toprow { border-top: .5px solid var(--sep); }
+.rank { font-family: var(--display); font-weight: 800; font-size: 20px; color: var(--faint); width: 18px; text-align: center; line-height: 1; }
+.toprow-m { flex: 1; min-width: 0; }
+.toprow-m b { display: block; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.toprow-m span { display: block; font-size: 13px; color: var(--muted); }
+.toprow > b.num { font-weight: 700; color: var(--text); }
+
+.mailcard { display: flex; align-items: center; gap: 12px; margin-top: 6px; }

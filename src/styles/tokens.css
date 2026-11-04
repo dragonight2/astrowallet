@@ -1,0 +1,61 @@
+/* Astro Wallet — tokens de design.
+   Direção: monocromático no estilo dos apps da Apple. Fundo branco por padrão; tema escuro só
+   quando a pessoa escolhe em Ajustes > Aparência (classe .app-dark no <html>), sem seguir o sistema.
+   Tipografia: Manrope em toda a interface — geométrica, elegante e muito legível; números grandes
+   em peso forte com espaçamento justo. Cor só para sinalizar: âmbar perto do limite, vermelho acima.
+   Layout: coluna de celular; barra superior translúcida; título grande com o mês; blocos em cinza
+   muito claro sobre o branco; barra de abas com o Início destacado no centro. */
+:root {
+  --bg: #FFFFFF;
+  --card: #F5F5F7;
+  --surface: #FFFFFF;        /* campos dentro de cartões e folhas */
+  --text: #0A0A0B;
+  --muted: #5E5E66;
+  --faint: #8E8E93;
+  --sep: #E3E3E8;
+  --fill: #EDEDF0;
+  --fill-2: #DCDCE1;
+  --accent: #0A0A0B;
+  --on-accent: #FFFFFF;
+  --bar-bg: rgba(255, 255, 255, .82);
+  --danger: #C4111D;
+  --warn: #9A5B00;
+  --shade: rgba(0, 0, 0, .32);
+  --sheet-shadow: 0 -10px 40px rgba(0, 0, 0, .12);
+  --mark-bg: #0A0A0B;
+  --mark-fg: #FFFFFF;
+  --seg-on: #FFFFFF;
+  --knob-on: #FFFFFF;
+
+  --font: "Manrope", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", system-ui, sans-serif;
+  --display: "Manrope", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", system-ui, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --col: 480px;
+  --r: 16px;
+  color-scheme: light;
+}
+
+:root.app-dark {
+  --bg: #000000;
+  --card: #1C1C1E;
+  --surface: #2C2C2E;
+  --text: #F5F5F7;
+  --muted: #AEAEB2;
+  --faint: #8E8E93;
+  --sep: #38383A;
+  --fill: #2C2C2E;
+  --fill-2: #3A3A3C;
+  --accent: #F5F5F7;
+  --on-accent: #0A0A0B;
+  --bar-bg: rgba(18, 18, 20, .82);
+  --danger: #FF6B6B;
+  --warn: #FFB340;
+  --shade: rgba(0, 0, 0, .6);
+  --sheet-shadow: 0 -10px 40px rgba(0, 0, 0, .6);
+  --mark-bg: #F5F5F7;
+  --mark-fg: #0A0A0B;
+  --seg-on: #636366;
+  --knob-on: #0A0A0B;
+  color-scheme: dark;
+}
